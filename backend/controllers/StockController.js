@@ -19,7 +19,7 @@ export async function getAllStocks(req,res) {
     res.status(500).json({ message: error.message });
   }
 }
-
+        //GET STOCK BY ID//
 export async function updateStock(req, res) {
   try {
     const stock = await Stock.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -31,6 +31,8 @@ export async function updateStock(req, res) {
     res.status(400).json({ message: error.message });
   }
 }
+
+          //DELETE STOCK BY ID//
 export async function deleteStock(req, res) {
   try {
     const stock = await Stock.findByIdAndDelete(req.params.id);
