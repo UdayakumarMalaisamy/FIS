@@ -1,6 +1,6 @@
-import React from 'react'
-
+import
 const Report = () => {
+  
   return (
     <div>Report</div>
   )
