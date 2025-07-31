@@ -84,9 +84,7 @@ const Login = () => {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500">
-          Don’t have an account? <span className="text-green-600 font-medium hover:underline cursor-pointer">Register</span>
-        </p>
+        
       </div>
     </div>
   );

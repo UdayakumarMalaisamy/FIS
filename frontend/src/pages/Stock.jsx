@@ -1,181 +1,163 @@
+// frontend/src/pages/Stock.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const StockBill = () => {
+const Stock = () => {
   const [stocks, setStocks] = useState([]);
-  const [selectedStock, setSelectedStock] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [billItems, setBillItems] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    item: '',
+    totalStock: '',
+    balanceStock: '',
+    price: '',
+    Manafactureringdate: '',
+    experideDate: ''
+  });
 
-  // ✅ Fetch all fertilizers from backend
+  const fetchStocks = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/stocks/getAll');
+      setStocks(res.data);
+    } catch (err) {
+      console.error('Error fetching stocks:', err);
+    }
+  };
+
   useEffect(() => {
-    const fetchStocks = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/stocks/getAll');
-        setStocks(response.data);
-      } catch (error) {
-        console.error('Error fetching stocks:', error);
-      }
-    };
     fetchStocks();
   }, []);
 
-  // ✅ Add selected fertilizer to bill
-  const addToBill = () => {
-    const stock = stocks.find(s => s._id === selectedStock);
-    if (!stock || quantity <= 0) return;
-
-    const existingIndex = billItems.findIndex(item => item.id === stock._id);
-    const updatedItems = [...billItems];
-    let updatedTotal = total;
-
-    if (existingIndex !== -1) {
-      // Update existing item
-      const existingItem = updatedItems[existingIndex];
-      const newQty = existingItem.quantity + quantity;
-      const newSubtotal = newQty * stock.price;
-
-      updatedItems[existingIndex] = {
-        ...existingItem,
-        quantity: newQty,
-        subtotal: newSubtotal
-      };
-
-      updatedTotal = total - existingItem.subtotal + newSubtotal;
-    } else {
-      // Add new item
-      const newItem = {
-        id: stock._id,
-        name: stock.item,
-        price: stock.price,
-        quantity: quantity,
-        subtotal: stock.price * quantity
-      };
-      updatedItems.push(newItem);
-      updatedTotal += newItem.subtotal;
-    }
-
-    setBillItems(updatedItems);
-    setTotal(updatedTotal);
-    setSelectedStock('');
-    setQuantity(1);
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
-  // ✅ Submit bill
-  const createBill = async () => {
-    if (billItems.length === 0) {
-      alert('Please add items to the bill');
-      return;
-    }
-
-    const billData = {
-      items: billItems,
-      total,
-      date: new Date().toISOString()
-    };
-
+  const handleAddStock = async (e) => {
+    e.preventDefault();
     try {
-      // Optional: POST to your backend if you want to save the bill
-      // await axios.post('http://localhost:5000/api/bills', billData);
+      await axios.post('http://localhost:5000/api/stocks/createStock', formData);
+      setShowForm(false);
+      setFormData({
+        item: '',
+        totalStock: '',
+        balanceStock: '',
+        price: '',
+        Manafactureringdate: '',
+        experideDate: ''
+      });
+      fetchStocks();
+    } catch (err) {
+      console.error('Error adding stock:', err.response?.data?.message || err.message);
+    }
+  };
 
-      console.log('Bill submitted:', billData);
-      alert('✅ Bill created successfully!');
-
-      setBillItems([]);
-      setTotal(0);
-    } catch (error) {
-      console.error('Error creating bill:', error);
+  const handleEdit = (stock) => {
+    setFormData({
+      item: stock.item,
+      totalStock: stock.totalStock,
+      balanceStock: stock.balanceStock,
+      price: stock.price,
+      Manafactureringdate: stock.Manafactureringdate,
+      experideDate: stock.experideDate
+    });
+    setShowForm(true);
+  };
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this stock?')) {
+      try {
+        await axios.delete(`http://localhost:5000/api/stocks/deleteStock/${id}`);
+        fetchStocks();
+      } catch (err) {
+        console.error('Error deleting stock:', err);
+      }
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">🧾 Create Fertilizer Bill</h2>
-
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        {/* Fertilizer Dropdown */}
-        <div className="flex-1">
-          <label className="block mb-1 text-gray-700 font-medium">Fertilizer</label>
-          <select
-            value={selectedStock}
-            onChange={(e) => setSelectedStock(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            <option value="">Select Fertilizer</option>
-            {stocks.map(stock => (
-              <option key={stock._id} value={stock._id}>
-                {stock.item} - ₹{stock.price}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Quantity Input */}
-        <div className="w-32">
-          <label className="block mb-1 text-gray-700 font-medium">Quantity</label>
-          <input
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(parseInt(e.target.value))}
-            min="1"
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-
-        {/* Add Button */}
+    <div className="p-6">
+      <div className="flex justify-between mb-4">
+        <h2 className="text-2xl font-bold">Stock Management</h2>
         <button
-          onClick={addToBill}
-          disabled={!selectedStock || quantity <= 0}
-          className="self-end bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+          onClick={() => setShowForm(true)}
         >
-          ➕ Add to Bill
+          + Add Stock
         </button>
       </div>
 
-      {/* Bill Items Table */}
-      <div>
-        <h3 className="text-xl font-semibold mb-4 text-gray-800">Bill Items</h3>
-        {billItems.length > 0 ? (
-          <>
-            <table className="w-full table-auto border border-gray-200 mb-4">
-              <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="p-2 text-left">Item</th>
-                  <th className="p-2 text-right">Price (₹)</th>
-                  <th className="p-2 text-right">Qty</th>
-                  <th className="p-2 text-right">Subtotal (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {billItems.map((item, index) => (
-                  <tr key={index} className="border-t border-gray-100">
-                    <td className="p-2">{item.name}</td>
-                    <td className="p-2 text-right">{item.price}</td>
-                    <td className="p-2 text-right">{item.quantity}</td>
-                    <td className="p-2 text-right">{item.subtotal.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <table className="min-w-full border border-gray-300 text-sm text-left">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border px-4 py-2">Item</th>
+            <th className="border px-4 py-2">Total</th>
+            <th className="border px-4 py-2">Balance</th>
+            <th className="border px-4 py-2">Price</th>
+            <th className="border px-4 py-2">Mfg Date</th>
+            <th className="border px-4 py-2">Exp Date</th>
+            <th className="border px-4 py-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stocks.map((stock) => (
+            <tr key={stock._id} className="hover:bg-gray-50">
+              <td className="border px-4 py-2">{stock.item}</td>
+              <td className="border px-4 py-2">{stock.totalStock}</td>
+              <td className="border px-4 py-2">{stock.balanceStock}</td>
+              <td className="border px-4 py-2">₹{stock.price}</td>
+              <td className="border px-4 py-2">{new Date(stock.Manafactureringdate).toLocaleDateString()}</td>
+              <td className="border px-4 py-2">{new Date(stock.experideDate).toLocaleDateString()}</td>
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => handleDelete(stock._id)}
+                  className="text-red-500 hover:underline"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => handleEdit(stock)}
+                  className="text-blue-500 hover:underline ml-2"
+                >
+                  Edit
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-            <div className="text-right text-lg font-semibold text-gray-800 mb-4">
-              Total: ₹{total.toFixed(2)}
-            </div>
+      {/* Add Stock Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-md w-full max-w-md shadow-md">
+            <h3 className="text-xl font-semibold mb-4">Add New Stock</h3>
+            <form onSubmit={handleAddStock} className="space-y-4">
+              <input name="item" value={formData.item} onChange={handleChange} required placeholder="Item Name" className="w-full border px-3 py-2" />
+              <input name="totalStock" value={formData.totalStock} onChange={handleChange} required type="number" placeholder="Total Stock" className="w-full border px-3 py-2" />
+              <input name="balanceStock" value={formData.balanceStock} onChange={handleChange} required type="number" placeholder="Balance Stock" className="w-full border px-3 py-2" />
+              <input name="price" value={formData.price} onChange={handleChange} required type="number" placeholder="Price" className="w-full border px-3 py-2" />
+              <input name="Manafactureringdate" value={formData.Manafactureringdate} onChange={handleChange} required type="date" className="w-full border px-3 py-2" />
+              <input name="experideDate" value={formData.experideDate} onChange={handleChange} required type="date" className="w-full border px-3 py-2" />
 
-            <button
-              onClick={createBill}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
-            >
-              ✅ Create Bill
-            </button>
-          </>
-        ) : (
-          <p className="text-gray-500">No fertilizers added yet.</p>
-        )}
-      </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="px-4 py-2 border border-gray-400 rounded"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded">
+                  Add
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default StockBill;
+export default Stock;

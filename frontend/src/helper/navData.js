@@ -11,7 +11,7 @@ const navdata = [
     icon: RxDashboard,
   },
   {
-    title: "Stock",
+    title: "Stocks",
     link: "/stock",
     icon: VscLibrary,
   },
