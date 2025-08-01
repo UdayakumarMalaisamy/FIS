@@ -1,10 +1,13 @@
-// src/pages/Dashboard.jsx
-import React from 'react';
+import React from 'react'
 
-const Dashboard = () => {
+const dashboard = () => {
+  const cardData =[
+    
+    
+  ]
   return (
-    <div className="text-xl font-bold">Dashboard Page</div>
-  );
-};
+    <div>dashboard</div>
+  )
+}
 
-export default Dashboard;
+export default dashboard

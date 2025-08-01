@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+
 const Bill = () => {
   const [bills, setBills] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
+    billno: "",
     costmername: "",
     contact: "",
     item: "",
@@ -12,7 +14,6 @@ const Bill = () => {
     tolalprice: "",
     paymentstatus: "",
     Balanceamount: "",
-   
   });
 
   const fetchBills = async () => {
@@ -50,6 +51,7 @@ const Bill = () => {
       await axios.post("http://localhost:5000/api/bills/createBill", payload);
       setShowForm(false);
       setFormData({
+        billno: "",
         costmername: "",
         contact: "",
         item: "",
@@ -57,7 +59,6 @@ const Bill = () => {
         tolalprice: "",
         paymentstatus: "",
         Balanceamount: "",
-      
       });
       fetchBills();
     } catch (err) {
@@ -70,6 +71,7 @@ const Bill = () => {
 
   const handleEdit = (bill) => {
     setFormData({
+      billno: bill.billno,
       costmername: bill.costmername,
       contact: bill.contact,
       item: bill.item,
@@ -77,7 +79,6 @@ const Bill = () => {
       tolalprice: bill.tolalprice,
       paymentstatus: bill.paymentstatus,
       Balanceamount: bill.Balanceamount,
- 
     });
     setShowForm(true);
   };
@@ -95,145 +96,156 @@ const Bill = () => {
   };
 
   return (
-<div className="p-4">
-  <div className="flex items-center justify-between mb-4">
-    <h1 className="text-2xl font-bold">Bills</h1>
-    <button
-      onClick={() => setShowForm(!showForm)}
-      className="bg-blue-500 text-white px-4 py-2 rounded"
-    >
-      {showForm ? "Hide Form" : "Add Bill"}
-    </button>
-  </div>
-
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl font-semibold">Bills</h1>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="px-4 py-2 border rounded"
+        >
+          {showForm ? "Hide Form" : "Add Bill"}
+        </button>
+      </div>
 
       {showForm && (
-        <form onSubmit={handleAddBill} className="mb-4">
-          <input
-            type="text"
-            name="costmername"
-            placeholder="Customer Name"
-            value={formData.costmername}
-            onChange={handleChange}
-            className="border p-2 mr-2"
-            required
-          />
-          <br />
-          <input
-            type="text"
-            name="contact"
-            placeholder="Contact"
-            value={formData.contact}
-            onChange={handleChange}
-            className="border p-2 mr-2"
-            required
-          />
-          <br />
-          <input
-            type="text"
-            name="item"
-            placeholder="Item"
-            value={formData.item}
-            onChange={handleChange}
-            className="border p-2 mr-2"
-            required
-          />
-          <br />
-          <input
-            type="number"
-            name="quantity"
-            placeholder="Quantity"
-            value={formData.quantity}
-            onChange={handleChange}
-            className="border p-2 mr-2"
-            required
-          />
-          <br />
-          <input
-            type="number"
-            name="tolalprice"
-            placeholder="Total Price"
-            value={formData.tolalprice}
-            onChange={handleChange}
-            className="border p-2 mr-2"
-            required
-          />
-          <br />
-          <select
-            name="paymentstatus"
-            value={formData.paymentstatus}
-            onChange={handleChange}
-            className="border p-2 mr-2"
-            required
-          >
-            <option value="">Select Payment Status</option>
-            <option value="Paid">Paid</option>
-            <option value="Partial">Partial</option>
-            <option value="Unpaid">Unpaid</option>
-          </select>
-          <br />
-          {formData.paymentstatus !== "Paid" && (
-            <input
-              type="number"
-              name="Balanceamount"
-              placeholder="Balance Amount"
-              value={formData.Balanceamount}
-              onChange={handleChange}
-              className="border p-2 mr-2"
-            />
-          
-          )}
-          <br />
-       
-          <button
-            type="submit"
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Submit
-          </button>
-        </form>
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[2px] bg-opacity-30 z-50">
+          <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">Add Bill</h2>
+            <form onSubmit={handleAddBill} className="space-y-4">
+               <input
+                type="text"
+                name="billno"
+                placeholder="Bill Number"
+                value={formData.billno}
+                onChange={handleChange}
+                className="border p-2 w-full"
+                required
+              /> 
+              <input
+                type="text"
+                name="costmername"
+                placeholder="Customer Name"
+                value={formData.costmername}
+                onChange={handleChange}
+                className="border p-2 w-full"
+                required
+              />
+              <input
+                type="text"
+                name="contact"
+                placeholder="Contact"
+                value={formData.contact}
+                onChange={handleChange}
+                className="border p-2 w-full"
+                required
+              />
+              <input
+                type="text"
+                name="item"
+                placeholder="Item"
+                value={formData.item}
+                onChange={handleChange}
+                className="border p-2 w-full"
+                required
+              />
+              <input
+                type="number"
+                name="quantity"
+                placeholder="Quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                className="border p-2 w-full"
+                required
+              />
+              <input
+                type="number"
+                name="tolalprice"
+                placeholder="Total Price"
+                value={formData.tolalprice}
+                onChange={handleChange}
+                className="border p-2 w-full"
+                required
+              />
+              <select
+                name="paymentstatus"
+                value={formData.paymentstatus}
+                onChange={handleChange}
+                className="border p-2 w-full"
+                required
+              >
+                <option value="">Select Payment Status</option>
+                <option value="Paid">Paid</option>
+                <option value="Partial">Partial</option>
+                <option value="Unpaid">Unpaid</option>
+              </select>
+              {formData.paymentstatus !== "Paid" && (
+                <input
+                  type="number"
+                  name="Balanceamount"
+                  placeholder="Balance Amount"
+                  value={formData.Balanceamount}
+                  onChange={handleChange}
+                  className="border p-2 w-full"
+                />
+              )}
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="border px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="border px-4 py-2 rounded">
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
-      <table className="min-w-full bg-white">
+      <table className="min-w-full border-collapse">
         <thead>
           <tr>
-            <th className="py-2 px-4 border">Customer Name</th>
-            <th className="py-2 px-4 border">Contact</th>
-            <th className="py-2 px-4 border">Item</th>
-            <th className="py-2 px-4 border">Quantity</th>
-            <th className="py-2 px-4 border">Total</th>
-            <th className="py-2 px-4 border">Payment</th>
-            <th className="py-2 px-4 border">Balance</th>
-            <th className="py-2 px-4 border">Actions</th>
+            <th className="border px-3 py-2">Bill Number</th>
+            <th className="border px-3 py-2">Customer Name</th>
+            <th className="border px-3 py-2">Contact</th>
+            <th className="border px-3 py-2">Item</th>
+            <th className="border px-3 py-2">Quantity</th>
+            <th className="border px-3 py-2">Total</th>
+            <th className="border px-3 py-2">Payment</th>
+            <th className="border px-3 py-2">Balance</th>
+            <th className="border px-3 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {bills.map((bill) => (
             <tr key={bill._id}>
-              <td className="py-2 px-4 border">{bill.costmername}</td>
-              <td className="py-2 px-4 border">{bill.contact}</td>
-              <td className="py-2 px-4 border">{bill.item}</td>
-              <td className="py-2 px-4 border">{bill.quantity}</td>
-              <td className="py-2 px-4 border">₹{bill.tolalprice}</td>
-              <td className="py-2 px-4 border">{bill.paymentstatus}</td>
-              <td className="py-2 px-4 border">₹{bill.Balanceamount}</td>
-              <td className="py-2 px-4 border">
-    
-              
-              <td className="py-2 px-4 border">
-                <button
-                  onClick={() => handleDelete(bill._id)}
-                  className="text-red-500 hover:underline mr-2"
+              <td className="border px-3 py-2">{bill.billno}</td>
+              <td className="border px-3 py-2">{bill.costmername}</td>
+              <td className="border px-3 py-2">{bill.contact}</td>
+              <td className="border px-3 py-2">{bill.item}</td>
+              <td className="border px-3 py-2">{bill.quantity}</td>
+              <td className="border px-3 py-2">₹{bill.tolalprice}</td>
+              <td className="border px-3 py-2">{bill.paymentstatus}</td>
+              <td className="border px-3 py-2">₹{bill.Balanceamount}</td>
+              <td className="border px-3 py-2">
+                <select
+                  onChange={(e) => {
+                    const action = e.target.value;
+                    if (action === "edit") handleEdit(bill);
+                    else if (action === "delete") handleDelete(bill._id);
+                  }}
+                  defaultValue=""
+                  className="border rounded px-2 py-1 text-sm"
                 >
-                  Delete
-                </button>
-                <button
-                  onClick={() => handleEdit(bill)}
-                  className="text-blue-500 hover:underline"
-                >
-                  Edit
-                </button>
-                </td> 
+                  <option value="" disabled>
+                    Action
+                  </option>
+                  <option value="edit">Edit</option>
+                  <option value="delete">Delete</option>
+                </select>
               </td>
             </tr>
           ))}
