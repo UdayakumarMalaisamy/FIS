@@ -1,0 +1,17 @@
+# Go to your project directory
+cd /path/to/your/project
+
+# Create the .gitignore file
+touch .gitignore
+
+# Add common ignores for MERN projects
+echo "node_modules/" >> .gitignore
+echo ".env" >> .gitignore
+echo "dist/" >> .gitignore
+echo "build/" >> .gitignore
+echo "npm-debug.log*" >> .gitignore
+echo "yarn-debug.log*" >> .gitignore
+echo "yarn-error.log*" >> .gitignore
+echo ".DS_Store" >> .gitignore
+echo ".vscode/" >> .gitignore
+echo "*.log" >> .gitignore
