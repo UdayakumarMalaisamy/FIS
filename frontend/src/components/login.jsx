@@ -23,7 +23,7 @@ const Login = () => {
       localStorage.setItem('token', response.data.token);
       setFormData({ username: '', password: '' });
       setError('');
-      navigate('/sidebar');
+      navigate('/dashboard');
     } catch (error) {
       setError(error.response?.data?.message || 'Login failed');
     }

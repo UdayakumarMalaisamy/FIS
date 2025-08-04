@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-
 const Bill = () => {
   const [bills, setBills] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -96,38 +95,29 @@ const Bill = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-gray-900 text-white min-h-screen">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold">Bills</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 border rounded"
+          className="px-4 py-2 border rounded border-white"
         >
           {showForm ? "Hide Form" : "Add Bill"}
         </button>
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[2px] bg-opacity-30 z-50">
-          <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[1px] bg-black bg-opacity-50 z-50">
+          <div className="bg-gray-800 p-6 rounded shadow-md w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Add Bill</h2>
             <form onSubmit={handleAddBill} className="space-y-4">
-               <input
-                type="text"
-                name="billno"
-                placeholder="Bill Number"
-                value={formData.billno}
-                onChange={handleChange}
-                className="border p-2 w-full"
-                required
-              /> 
               <input
                 type="text"
                 name="costmername"
                 placeholder="Customer Name"
                 value={formData.costmername}
                 onChange={handleChange}
-                className="border p-2 w-full"
+                className="border p-2 w-full bg-gray-700 text-white"
                 required
               />
               <input
@@ -136,7 +126,7 @@ const Bill = () => {
                 placeholder="Contact"
                 value={formData.contact}
                 onChange={handleChange}
-                className="border p-2 w-full"
+                className="border p-2 w-full bg-gray-700 text-white"
                 required
               />
               <input
@@ -145,7 +135,7 @@ const Bill = () => {
                 placeholder="Item"
                 value={formData.item}
                 onChange={handleChange}
-                className="border p-2 w-full"
+                className="border p-2 w-full bg-gray-700 text-white"
                 required
               />
               <input
@@ -154,7 +144,7 @@ const Bill = () => {
                 placeholder="Quantity"
                 value={formData.quantity}
                 onChange={handleChange}
-                className="border p-2 w-full"
+                className="border p-2 w-full bg-gray-700 text-white"
                 required
               />
               <input
@@ -163,14 +153,14 @@ const Bill = () => {
                 placeholder="Total Price"
                 value={formData.tolalprice}
                 onChange={handleChange}
-                className="border p-2 w-full"
+                className="border p-2 w-full bg-gray-700 text-white"
                 required
               />
               <select
                 name="paymentstatus"
                 value={formData.paymentstatus}
                 onChange={handleChange}
-                className="border p-2 w-full"
+                className="border p-2 w-full bg-gray-700 text-white"
                 required
               >
                 <option value="">Select Payment Status</option>
@@ -185,18 +175,18 @@ const Bill = () => {
                   placeholder="Balance Amount"
                   value={formData.Balanceamount}
                   onChange={handleChange}
-                  className="border p-2 w-full"
+                  className="border p-2 w-full bg-gray-700 text-white"
                 />
               )}
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="border px-4 py-2 rounded"
+                  className="border px-4 py-2 rounded border-white"
                 >
                   Cancel
                 </button>
-                <button type="submit" className="border px-4 py-2 rounded">
+                <button type="submit" className="border px-4 py-2 rounded border-white">
                   Submit
                 </button>
               </div>
@@ -205,7 +195,7 @@ const Bill = () => {
         </div>
       )}
 
-      <table className="min-w-full border-collapse">
+      <table className="min-w-full border-collapse text-white">
         <thead>
           <tr>
             <th className="border px-3 py-2">Bill Number</th>
@@ -238,7 +228,7 @@ const Bill = () => {
                     else if (action === "delete") handleDelete(bill._id);
                   }}
                   defaultValue=""
-                  className="border rounded px-2 py-1 text-sm"
+                  className="border rounded px-2 py-1 text-sm bg-gray-700 text-white"
                 >
                   <option value="" disabled>
                     Action

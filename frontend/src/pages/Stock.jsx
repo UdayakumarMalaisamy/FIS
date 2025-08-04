@@ -53,9 +53,7 @@ const Stock = () => {
   };
 
   const handleEdit = (stock) => {
-    setFormData({
-      ...stock
-    });
+    setFormData({ ...stock });
     setShowForm(true);
   };
 
@@ -71,83 +69,81 @@ const Stock = () => {
   };
 
   return (
-    <div className="p-4 font-sans text-black">
+    <div className="p-4 font-sans text-white bg-gray-900 min-h-screen">
       <div className="flex justify-between mb-4">
-        <h2 className="text-lg font-bold">Stock Management</h2>
+        <h2 className="text-xl font-bold">Stock Management</h2>
         <button
-          className="border border-black px-3 py-1"
+          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600"
           onClick={() => setShowForm(true)}
         >
           + Add Stock
         </button>
       </div>
 
-      <table className="w-full border border-black text-sm">
-        <thead>
-          <tr>
-            <th className="border border-black px-3 py-2">Item</th>
-            <th className="border border-black px-3 py-2">Total</th>
-            <th className="border border-black px-3 py-2">Balance</th>
-            <th className="border border-black px-3 py-2">Price</th>
-            <th className="border border-black px-3 py-2">Mfg Date</th>
-            <th className="border border-black px-3 py-2">Exp Date</th>
-            <th className="border border-black px-3 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stocks.map((stock) => (
-            <tr key={stock._id}>
-              <td className="border border-black px-3 py-2">{stock.item}</td>
-              <td className="border border-black px-3 py-2">{stock.totalStock}</td>
-              <td className="border border-black px-3 py-2">{stock.balanceStock}</td>
-              <td className="border border-black px-3 py-2">₹{stock.price}</td>
-              <td className="border border-black px-3 py-2">{new Date(stock.Manafactureringdate).toLocaleDateString()}</td>
-              <td className="border border-black px-3 py-2">{new Date(stock.experideDate).toLocaleDateString()}</td>
-              <td className="border border-black px-3 py-2">
-                <select
-                  onChange={(e) => {
-                    const action = e.target.value;
-                    if (action === 'delete') handleDelete(stock._id);
-                    else if (action === 'edit') handleEdit(stock);
-                  }}
-                  className="border border-black px-2 py-1"
-                >
-                  <option value="">Select Action</option>
-                  <option value="edit">Edit</option>
-                  <option value="delete">Delete</option>
-                </select>
-              </td>
+      <div className="overflow-auto">
+        <table className="w-full border border-gray-700 text-sm">
+          <thead className="bg-gray-800 text-white">
+            <tr>
+              {['Item', 'Total', 'Balance', 'Price', 'Mfg Date', 'Exp Date', 'Action'].map((head) => (
+                <th key={head} className="border border-gray-700 px-3 py-2">{head}</th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {stocks.map((stock) => (
+              <tr key={stock._id} className="hover:bg-gray-800">
+                <td className="border border-gray-700 px-3 py-2">{stock.item}</td>
+                <td className="border border-gray-700 px-3 py-2">{stock.totalStock}</td>
+                <td className="border border-gray-700 px-3 py-2">{stock.balanceStock}</td>
+                <td className="border border-gray-700 px-3 py-2">₹{stock.price}</td>
+                <td className="border border-gray-700 px-3 py-2">{new Date(stock.Manafactureringdate).toLocaleDateString()}</td>
+                <td className="border border-gray-700 px-3 py-2">{new Date(stock.experideDate).toLocaleDateString()}</td>
+                <td className="border border-gray-700 px-3 py-2">
+                  <select
+                    onChange={(e) => {
+                      const action = e.target.value;
+                      if (action === 'delete') handleDelete(stock._id);
+                      else if (action === 'edit') handleEdit(stock);
+                    }}
+                    className="bg-gray-800 border border-gray-700 text-white px-2 py-1 rounded"
+                  >
+                    <option value="">Action</option>
+                    <option value="edit">Edit</option>
+                    <option value="delete">Delete</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {/* Add/Edit Stock Modal */}
+      {/* Modal */}
       {showForm && (
-        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[2px] bg-opacity-90 z-50">
-          <div className="bg-white border border-black p-4 w-full max-w-md">
-            <h3 className="text-base font-semibold mb-2">Stock Form</h3>
-            <form onSubmit={handleAddStock} className="space-y-2">
-              <input name="item" value={formData.item} onChange={handleChange} required placeholder="Item Name" className="w-full border border-black p-1" />
-              <input name="totalStock" value={formData.totalStock} onChange={handleChange} required type="number" placeholder="Total Stock" className="w-full border border-black p-1" />
-              <input name="balanceStock" value={formData.balanceStock} onChange={handleChange} required type="number" placeholder="Balance Stock" className="w-full border border-black p-1" />
-              <input name="price" value={formData.price} onChange={handleChange} required type="number" placeholder="Price" className="w-full border border-black p-1" />
-              <input name="Manafactureringdate" value={formData.Manafactureringdate} onChange={handleChange} required type="date" className="w-full border border-black p-1" />
-              <input name="experideDate" value={formData.experideDate} onChange={handleChange} required type="date" className="w-full border border-black p-1" />
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/60 z-50">
+          <div className="bg-gray-800 text-white border border-gray-600 p-6 w-full max-w-md rounded-md">
+            <h3 className="text-lg font-semibold mb-4">{formData._id ? 'Edit Stock' : 'Add New Stock'}</h3>
+            <form onSubmit={handleAddStock} className="space-y-3">
+              <input name="item" value={formData.item} onChange={handleChange} required placeholder="Item Name" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
+              <input name="totalStock" value={formData.totalStock} onChange={handleChange} required type="number" placeholder="Total Stock" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
+              <input name="balanceStock" value={formData.balanceStock} onChange={handleChange} required type="number" placeholder="Balance Stock" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
+              <input name="price" value={formData.price} onChange={handleChange} required type="number" placeholder="Price" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
+              <input name="Manafactureringdate" value={formData.Manafactureringdate} onChange={handleChange} required type="date" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
+              <input name="experideDate" value={formData.experideDate} onChange={handleChange} required type="date" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
 
-              <div className="flex justify-end gap-2 mt-4">
+              <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="w-1/4 border border-black px-2 py-1"
+                  className="bg-red-700 hover:bg-red-600 px-4 py-1 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="w-1/4 border border-black px-2 py-1"
+                  className="bg-blue-700 hover:bg-blue-600 px-4 py-1 rounded"
                 >
-                  {formData._id ? 'Update Stock' : 'Add Stock'}
+                  {formData._id ? 'Update' : 'Add'}
                 </button>
               </div>
             </form>
