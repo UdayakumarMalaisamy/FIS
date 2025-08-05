@@ -8,8 +8,7 @@ const Bill = () => {
     billno: "",
     costmername: "",
     contact: "",
-    item: "",
-    quantity: "",
+    items: [{ item: "", quantity: "", price: "" }],
     tolalprice: "",
     paymentstatus: "",
     Balanceamount: "",
@@ -17,9 +16,7 @@ const Bill = () => {
 
   const fetchBills = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/bills/getAllBills"
-      );
+      const res = await axios.get("http://localhost:5000/api/bills/getAllBills");
       setBills(res.data);
     } catch (err) {
       console.error("Error fetching bills:", err);
@@ -37,13 +34,37 @@ const Bill = () => {
     }));
   };
 
+  const handleItemChange = (index, field, value) => {
+    const newItems = [...formData.items];
+    newItems[index][field] = value;
+    setFormData((prev) => ({ ...prev, items: newItems }));
+  };
+
+  const addItem = () => {
+    setFormData((prev) => ({
+      ...prev,
+      items: [...prev.items, { item: "", quantity: "", price: "" }],
+    }));
+  };
+
+  const removeItem = (index) => {
+    const newItems = formData.items.filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, items: newItems }));
+  };
+
   const handleAddBill = async (e) => {
     e.preventDefault();
+
+    const total = formData.items.reduce((acc, item) => {
+      const qty = parseFloat(item.quantity) || 0;
+      const prc = parseFloat(item.price) || 0;
+      return acc + qty * prc;
+    }, 0);
+
     try {
       const payload = {
         ...formData,
-        quantity: parseInt(formData.quantity),
-        tolalprice: parseFloat(formData.tolalprice),
+        tolalprice: total,
         Balanceamount: parseFloat(formData.Balanceamount),
       };
 
@@ -53,18 +74,14 @@ const Bill = () => {
         billno: "",
         costmername: "",
         contact: "",
-        item: "",
-        quantity: "",
+        items: [{ item: "", quantity: "", price: "" }],
         tolalprice: "",
         paymentstatus: "",
         Balanceamount: "",
       });
       fetchBills();
     } catch (err) {
-      console.error(
-        "Error adding bill:",
-        err.response?.data?.message || err.message
-      );
+      console.error("Error adding bill:", err.response?.data?.message || err.message);
     }
   };
 
@@ -73,8 +90,7 @@ const Bill = () => {
       billno: bill.billno,
       costmername: bill.costmername,
       contact: bill.contact,
-      item: bill.item,
-      quantity: bill.quantity,
+      items: bill.items || [{ item: "", quantity: "", price: "" }],
       tolalprice: bill.tolalprice,
       paymentstatus: bill.paymentstatus,
       Balanceamount: bill.Balanceamount,
@@ -87,10 +103,7 @@ const Bill = () => {
       await axios.delete(`http://localhost:5000/api/bills/deleteBill/${id}`);
       fetchBills();
     } catch (err) {
-      console.error(
-        "Error deleting bill:",
-        err.response?.data?.message || err.message
-      );
+      console.error("Error deleting bill:", err.response?.data?.message || err.message);
     }
   };
 
@@ -129,33 +142,52 @@ const Bill = () => {
                 className="border p-2 w-full bg-gray-700 text-white"
                 required
               />
-              <input
-                type="text"
-                name="item"
-                placeholder="Item"
-                value={formData.item}
-                onChange={handleChange}
-                className="border p-2 w-full bg-gray-700 text-white"
-                required
-              />
-              <input
-                type="number"
-                name="quantity"
-                placeholder="Quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-                className="border p-2 w-full bg-gray-700 text-white"
-                required
-              />
-              <input
-                type="number"
-                name="tolalprice"
-                placeholder="Total Price"
-                value={formData.tolalprice}
-                onChange={handleChange}
-                className="border p-2 w-full bg-gray-700 text-white"
-                required
-              />
+
+              <div className="space-y-2">
+                {formData.items.map((itm, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Item"
+                      value={itm.item}
+                      onChange={(e) => handleItemChange(index, "item", e.target.value)}
+                      className="border p-2 w-full bg-gray-700 text-white"
+                      required
+                    />
+                    <input
+                      type="number"
+                      placeholder="Qty"
+                      value={itm.quantity}
+                      onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
+                      className="border p-2 w-full bg-gray-700 text-white"
+                      required
+                    />
+                    <input
+                      type="number"
+                      placeholder="Price"
+                      value={itm.price}
+                      onChange={(e) => handleItemChange(index, "price", e.target.value)}
+                      className="border p-2 w-full bg-gray-700 text-white"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      className="text-red-400"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addItem}
+                  className="text-sm text-blue-400 underline"
+                >
+                  + Add Item
+                </button>
+              </div>
+
               <select
                 name="paymentstatus"
                 value={formData.paymentstatus}
@@ -168,6 +200,7 @@ const Bill = () => {
                 <option value="Partial">Partial</option>
                 <option value="Unpaid">Unpaid</option>
               </select>
+
               {formData.paymentstatus !== "Paid" && (
                 <input
                   type="number"
@@ -178,6 +211,7 @@ const Bill = () => {
                   className="border p-2 w-full bg-gray-700 text-white"
                 />
               )}
+
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
@@ -195,14 +229,13 @@ const Bill = () => {
         </div>
       )}
 
-      <table className="min-w-full border-collapse text-white">
+      <table className="min-w-full border-collapse text-white mt-6">
         <thead>
           <tr>
-            <th className="border px-3 py-2">Bill Number</th>
-            <th className="border px-3 py-2">Customer Name</th>
+            <th className="border px-3 py-2">Bill No</th>
+            <th className="border px-3 py-2">Customer</th>
             <th className="border px-3 py-2">Contact</th>
-            <th className="border px-3 py-2">Item</th>
-            <th className="border px-3 py-2">Quantity</th>
+            <th className="border px-3 py-2">Items</th>
             <th className="border px-3 py-2">Total</th>
             <th className="border px-3 py-2">Payment</th>
             <th className="border px-3 py-2">Balance</th>
@@ -211,16 +244,17 @@ const Bill = () => {
         </thead>
         <tbody>
           {bills.map((bill) => (
-            <tr key={bill._id}>
-              <td className="border px-3 py-2">{bill.billno}</td>
-              <td className="border px-3 py-2">{bill.costmername}</td>
-              <td className="border px-3 py-2">{bill.contact}</td>
-              <td className="border px-3 py-2">{bill.item}</td>
-              <td className="border px-3 py-2">{bill.quantity}</td>
-              <td className="border px-3 py-2">₹{bill.tolalprice}</td>
-              <td className="border px-3 py-2">{bill.paymentstatus}</td>
-              <td className="border px-3 py-2">₹{bill.Balanceamount}</td>
-              <td className="border px-3 py-2">
+             <tr key={bill._id} className="hover:bg-gray-800">
+            <td className="border border-gray-700 px-3 py-2 text-white">{bill.billno}</td>
+            <td className="border border-gray-700 px-3 py-2 text-white">{bill.costmername}</td>
+            <td className="border border-gray-700 px-3 py-2 text-white">{bill.contact}</td>
+            <td className="border border-gray-700 px-3 py-2 text-white">{bill.item}</td>
+            <td className="border border-gray-700 px-3 py-2 text-white">{bill.quantity}</td>
+            <td className="border border-gray-700 px-3 py-2 text-white">₹{bill.tolalprice}</td>
+            <td className="border border-gray-700 px-3 py-2 text-white">{bill.paymentstatus}</td>
+            <td className="border border-gray-700 px-3 py-2 text-white">₹{bill.Balanceamount}</td>
+            <td className="border border-gray-700 px-3 py-2 text-center">
+        
                 <select
                   onChange={(e) => {
                     const action = e.target.value;

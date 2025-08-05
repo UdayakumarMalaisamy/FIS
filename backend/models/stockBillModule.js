@@ -1,15 +1,20 @@
-// models/stockBillModule.js
 import mongoose from "mongoose";
 
-const BillSchema = new mongoose.Schema({
-  billno: { type: String, required: true },
-  costmername: { type: String, required: true },
-  contact: { type: String, required: true },
+const itemSchema = new mongoose.Schema({
   item: { type: String, required: true },
-  quantity: { type: String, required: true },
-  tolalprice: { type: Number, required: true },
-  paymentstatus: { type: String, required: true },
-  Balanceamount: { type: Number },
+  quantity: { type: Number, required: true },
+  price: { type: Number, required: true },
 });
 
-export default mongoose.model("Bill", BillSchema);
+const billSchema = new mongoose.Schema({
+  billno: { type: Number, required: true, unique: true },
+  costmername: { type: String, required: true },
+  contact: { type: String, required: true },
+  items: [itemSchema], // multiple items here
+  tolalprice: { type: Number, required: true },
+  paymentstatus: { type: String, enum: ["Paid", "Partial", "Unpaid"], required: true },
+  Balanceamount: { type: Number },
+  createdAt: { type: Date, default: Date.now },
+});
+
+export default mongoose.model("Bill", billSchema);

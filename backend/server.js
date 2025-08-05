@@ -2,6 +2,7 @@ import express, { json } from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import mongoose from "mongoose";
+
 config();
 
 const app = express();
@@ -22,5 +23,6 @@ app.use("/api/bills", stockBillRoutes);
 import authRoutes from "./routes/authRoute.js";
 app.use("/api/auth", authRoutes);
 
+ 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

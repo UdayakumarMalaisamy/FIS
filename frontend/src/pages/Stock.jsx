@@ -36,7 +36,12 @@ const Stock = () => {
   const handleAddStock = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/stocks/createStock', formData);
+      if (formData._id) {
+        await axios.put(`http://localhost:5000/api/stocks/updateStock/${formData._id}`, formData);
+      } else {
+        await axios.post('http://localhost:5000/api/stocks/createStock', formData);
+      }
+
       setShowForm(false);
       setFormData({
         item: '',
@@ -48,7 +53,7 @@ const Stock = () => {
       });
       fetchStocks();
     } catch (err) {
-      console.error('Error adding stock:', err.response?.data?.message || err.message);
+      console.error('Error saving stock:', err.response?.data?.message || err.message);
     }
   };
 
@@ -74,7 +79,17 @@ const Stock = () => {
         <h2 className="text-xl font-bold">Stock Management</h2>
         <button
           className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600"
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setFormData({
+              item: '',
+              totalStock: '',
+              balanceStock: '',
+              price: '',
+              Manafactureringdate: '',
+              experideDate: ''
+            });
+            setShowForm(true);
+          }}
         >
           + Add Stock
         </button>
@@ -120,30 +135,100 @@ const Stock = () => {
 
       {/* Modal */}
       {showForm && (
-        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/60 z-50">
-          <div className="bg-gray-800 text-white border border-gray-600 p-6 w-full max-w-md rounded-md">
-            <h3 className="text-lg font-semibold mb-4">{formData._id ? 'Edit Stock' : 'Add New Stock'}</h3>
-            <form onSubmit={handleAddStock} className="space-y-3">
-              <input name="item" value={formData.item} onChange={handleChange} required placeholder="Item Name" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
-              <input name="totalStock" value={formData.totalStock} onChange={handleChange} required type="number" placeholder="Total Stock" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
-              <input name="balanceStock" value={formData.balanceStock} onChange={handleChange} required type="number" placeholder="Balance Stock" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
-              <input name="price" value={formData.price} onChange={handleChange} required type="number" placeholder="Price" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
-              <input name="Manafactureringdate" value={formData.Manafactureringdate} onChange={handleChange} required type="date" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
-              <input name="experideDate" value={formData.experideDate} onChange={handleChange} required type="date" className="w-full bg-gray-900 border border-gray-600 p-2 rounded" />
+       <div className="fixed inset-0 bg-white/10 backdrop-blur-md flex items-center justify-center z-10">
 
-              <div className="flex justify-end gap-2">
+
+          <div className="bg-gray-900 text-white border border-gray-700 p-6 w-full max-w-2xl rounded-lg shadow-lg">
+            <h3 className="text-2xl font-bold mb-6">{formData._id ? 'Edit Stock' : 'Add New Stock'}</h3>
+            <form onSubmit={handleAddStock} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-semibold">Item Name</label>
+                <input
+                  name="item"
+                  value={formData.item}
+                  onChange={handleChange}
+                  required
+                  placeholder="e.g., Urea"
+                  className="bg-gray-800 border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-semibold">Total Stock</label>
+                <input
+                  name="totalStock"
+                  value={formData.totalStock}
+                  onChange={handleChange}
+                  required
+                  type="number"
+                  placeholder="100"
+                  className="bg-gray-800 border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-semibold">Balance Stock</label>
+                <input
+                  name="balanceStock"
+                  value={formData.balanceStock}
+                  onChange={handleChange}
+                  required
+                  type="number"
+                  placeholder="80"
+                  className="bg-gray-800 border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-semibold">Price (₹)</label>
+                <input
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                  type="number"
+                  placeholder="₹100"
+                  className="bg-gray-800 border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-semibold">Manufacturing Date</label>
+                <input
+                  name="Manafactureringdate"
+                  value={formData.Manafactureringdate}
+                  onChange={handleChange}
+                  required
+                  type="date"
+                  className="bg-gray-800 border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-semibold">Expiry Date</label>
+                <input
+                  name="experideDate"
+                  value={formData.experideDate}
+                  onChange={handleChange}
+                  required
+                  type="date"
+                  className="bg-gray-800 border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="md:col-span-2 flex justify-end mt-4 gap-3">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="bg-red-700 hover:bg-red-600 px-4 py-1 rounded"
+                  className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-700 hover:bg-blue-600 px-4 py-1 rounded"
+                  className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded"
                 >
-                  {formData._id ? 'Update' : 'Add'}
+                  {formData._id ? 'Update Stock' : 'Add Stock'}
                 </button>
               </div>
             </form>
