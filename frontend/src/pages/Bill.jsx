@@ -65,7 +65,7 @@ const Bill = () => {
       const payload = {
         ...formData,
         tolalprice: total,
-        Balanceamount: parseFloat(formData.Balanceamount),
+        Balanceamount: parseFloat(formData.Balanceamount || 0),
       };
 
       await axios.post("http://localhost:5000/api/bills/createBill", payload);
@@ -244,17 +244,21 @@ const Bill = () => {
         </thead>
         <tbody>
           {bills.map((bill) => (
-             <tr key={bill._id} className="hover:bg-gray-800">
-            <td className="border border-gray-700 px-3 py-2 text-white">{bill.billno}</td>
-            <td className="border border-gray-700 px-3 py-2 text-white">{bill.costmername}</td>
-            <td className="border border-gray-700 px-3 py-2 text-white">{bill.contact}</td>
-            <td className="border border-gray-700 px-3 py-2 text-white">{bill.item}</td>
-            <td className="border border-gray-700 px-3 py-2 text-white">{bill.quantity}</td>
-            <td className="border border-gray-700 px-3 py-2 text-white">₹{bill.tolalprice}</td>
-            <td className="border border-gray-700 px-3 py-2 text-white">{bill.paymentstatus}</td>
-            <td className="border border-gray-700 px-3 py-2 text-white">₹{bill.Balanceamount}</td>
-            <td className="border border-gray-700 px-3 py-2 text-center">
-        
+            <tr key={bill._id} className="hover:bg-gray-800">
+              <td className="border border-gray-700 px-3 py-2 text-white">{bill.billno}</td>
+              <td className="border border-gray-700 px-3 py-2 text-white">{bill.costmername}</td>
+              <td className="border border-gray-700 px-3 py-2 text-white">{bill.contact}</td>
+              <td className="border border-gray-700 px-3 py-2 text-white">
+                {bill.items.map((item, index) => (
+                  <div key={index}>
+                    {item.item} - {item.quantity} x ₹{item.price}
+                  </div>
+                ))}
+              </td>
+              <td className="border border-gray-700 px-3 py-2 text-white">₹{bill.tolalprice}</td>
+              <td className="border border-gray-700 px-3 py-2 text-white">{bill.paymentstatus}</td>
+              <td className="border border-gray-700 px-3 py-2 text-white">₹{bill.Balanceamount}</td>
+              <td className="border border-gray-700 px-3 py-2 text-center">
                 <select
                   onChange={(e) => {
                     const action = e.target.value;

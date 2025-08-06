@@ -2,13 +2,7 @@ import express from "express";
 const router = express.Router();
 
 import {
-  createBill,
-  getAllBills,
-  updateBill,
-  deleteBill,
-  billcount,
-} from "../controllers/stockBillController.js";
-
+  createBill,  getAllBills,  updateBill,  deleteBill,  billcount,} from "../controllers/stockBillController.js";
 // Routes
 router.post("/createBill", createBill);
 router.get("/getAllBills", getAllBills);

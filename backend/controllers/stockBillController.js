@@ -37,7 +37,9 @@ export async function getAllBills(req, res) {
 // Update a bill
 export async function updateBill(req, res) {
   try {
-    const bill = await Bill.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const bill = await Bill.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.status(200).json(bill);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -55,7 +57,7 @@ export async function deleteBill(req, res) {
 }
 // Bill count
 
-export async function billcount (req, res) {
+export async function billcount(req, res) {
   try {
     const count = await Bill.countDocuments();
     res.status(200).json({ count });

@@ -4,10 +4,12 @@ import axios from "axios";
 const Dashboard = () => {
   const [pendingCount, setPendingCount] = useState(0);
   const [billCount, setBillCount] = useState(0);
+  const [expiredStocks, setExpiredStocks] = useState([]);
 
   useEffect(() => {
     fetchPendingBills();
     fetchBillCount();
+    fetchExpiredStocks();
   }, []);
 
   const fetchPendingBills = async () => {
@@ -29,6 +31,15 @@ const Dashboard = () => {
     }
   };
 
+  const fetchExpiredStocks = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/stocks/expried");
+      setExpiredStocks(res.data);
+    } catch (err) {
+      console.error("Failed to fetch expired stocks:", err);
+    }
+  };
+
   const cardStyle = "bg-gray-800 rounded-xl p-4 shadow-md text-white";
 
   return (
@@ -45,13 +56,29 @@ const Dashboard = () => {
         {/* Pending Bills Card */}
         <div className={cardStyle}>
           <h2 className="text-lg font-medium">Pending Bills</h2>
-          <p className="text-3xl font-bold mt-2 -400">{pendingCount}</p>
+          <p className="text-3xl font-bold mt-2">{pendingCount}</p>
         </div>
 
-        {/* Add more cards here for profit, stock, etc. */}
+        {/* Expired Stocks Card */}
+        <div className={cardStyle + " col-span-1 sm:col-span-2 lg:col-span-2 width-half"}>
+          <h2 className="text-lg font-medium">Expired Stocks</h2>
+          <p className="text-3xl font-bold mt-2">{expiredStocks.length}</p>
+
+          {expiredStocks.length > 0 && (
+            <ul className="mt-3 space-y-1 text-sm list-disc list-inside text-white text-400 max-h-40 overflow-y-auto">
+              {expiredStocks.map((stock, index) => (
+                <li key={index}>
+                  {stock.item} (Expired on{" "}
+                  {new Date(stock.experideDate).toLocaleDateString()})
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default Dashboard;
+  

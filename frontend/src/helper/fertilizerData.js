@@ -1,4 +1,5 @@
-[
+
+const fertilizerData = [
   {
     "item": "Urea",
     "type": "Nitrogen (N)",
@@ -96,3 +97,5 @@
     "unit": "50 kg bag"
   }
 ]
+
+export default fertilizerData

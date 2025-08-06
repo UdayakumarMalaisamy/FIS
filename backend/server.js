@@ -4,7 +4,7 @@ import { config } from "dotenv";
 import mongoose from "mongoose";
 
 config();
-
+import "./jobs/stockExpiryChecker.js";
 const app = express();
 app.use(cors());
 app.use(json());

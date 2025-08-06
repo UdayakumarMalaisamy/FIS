@@ -15,6 +15,7 @@ function Layout() {
       {!hideSidebar && <Sidebar />}
       <div className="flex-1">
         <Routes>
+          
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/stock" element={<Stock />} />

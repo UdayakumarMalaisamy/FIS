@@ -46,5 +46,13 @@ export async function deleteStock(req, res) {
   }
 }
 
-//CRON JOBS
+//Expried Stock
+export async function ExpiredStock(req, res) {
+  try {
+    const stocks = await Stock.find({ experideDate: { $lt: new Date() } });
+    res.status(200).json(stocks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 

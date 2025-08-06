@@ -10,11 +10,7 @@ const navdata = [
     link: "/dashboard",
     icon: RxDashboard,
   },
-  {
-    title: "Stocks",
-    link: "/stock",
-    icon: VscLibrary,
-  },
+  
   {
     title: "Bill",
     link: "/bill",
@@ -24,6 +20,11 @@ const navdata = [
     title: "Reports",
     link: "/reports",
     icon: TbReportAnalytics ,
+  },
+  {
+    title: "Stocks",
+    link: "/stock",
+    icon: VscLibrary,
   }
 ];
 
