@@ -11,7 +11,7 @@ function Layout() {
   const hideSidebar = location.pathname === "/";
 
   return (
-    <div className="flex overflow-hidden">
+    <div className="flex postion-relative h-screen posison-relative overflow-hidden">
       {!hideSidebar && <Sidebar />}
       <div className="flex-1 ">
         <Routes>

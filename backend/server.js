@@ -2,9 +2,10 @@ import express, { json } from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import mongoose from "mongoose";
+import "./jobs/stockExpiryChecker.js";
 
 config();
-import "./jobs/stockExpiryChecker.js";
+
 const app = express();
 app.use(cors());
 app.use(json());
