@@ -1,25 +1,29 @@
 import cron from "node-cron";
-import Stock from "../models/StockModels.js"; 
-import mongoose from "mongoose";  
+import Stock from "../models/StockModels.js"
 cron.schedule("0 * * * *", async () => {
-  console.log("🔄 Running stock expiry check...");
+  console.log(" Running stock expiry check...");
 
   const today = new Date();
 
   try {
     const expiredStocks = await Stock.find({
-      experideDate: { $lte: today }
+      experideDate: { today }
     });
 
+
     if (expiredStocks.length > 0) {
-      console.log("⚠️ Expired stocks found:");
+      console.log(" Expired stocks found:");
+      
       expiredStocks.forEach((item) => {
         console.log(`- ${item.item} expired on ${item.experideDate}`);
       });
+                            
+
     } else {
-      console.log("✅ No expired stocks found.");
+      console.log(" No expired stocks found.");
     }
+
   } catch (err) {
-    console.error("❌ Error during cron job:", err);
+    console.error(" Error during cron job:", err);
   }
 });

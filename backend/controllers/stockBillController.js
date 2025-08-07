@@ -65,3 +65,20 @@ export async function billcount(req, res) {
     res.status(500).json({ message: err.message });
   }
 }
+
+
+// Add the total price to the bill
+export async function addTotalPrice(req, res) {
+  try {
+    const bill = await Bill.findById(req.params.id);
+    if (!bill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+    bill.tolalprice = req.body.tolalprice;
+    await bill.save();
+    res.status(200).json(bill);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+

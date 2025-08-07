@@ -20,7 +20,7 @@ const Sidebar = () => {
     <div className={`bg-gray-800 text-white h-screen flex flex-col justify-between ${isOpen ? 'w-65 ' : 'w-16'} transition-all duration-800`}>
       <div>
         <div className="flex items-center justify-between p-4">
-          {isOpen && <h2 className="text-2xl font-bold">Fertilizer <br /> <h3 className="text-sm">Management System</h3></h2>}
+          {isOpen && <h2 className="text-2xl font-bold">Fertilizer Management</h2>}
           <button onClick={toggleSidebar} className="text-white">
             <FaBars />
           </button>

@@ -9,6 +9,7 @@ const StockSchema = new Schema({
   Manafactureringdate: { type: Date, required: true },
   experideDate: { type: Date, required: true },
   date: { type: Date, default: Date.now },
+  totalprofit: { type: Number, required: true },
 });
 
 export default model("Stock", StockSchema);
