@@ -7,7 +7,7 @@ cron.schedule("0 * * * *", async () => {
 
   try {
     const expiredStocks = await Stock.find({
-      experideDate: { today }
+      experideDate: {$lt: today }
     });
 
 

@@ -28,8 +28,9 @@ const Stock = () => {
     totalStock: '',
     balanceStock: '',
     price: '',
-    Manafactureringdate: '',
-    experideDate: ''
+    manufacturingDate: '',
+    expiryDate: '',
+    totalProfit: ''
   });
 
   const fetchStocks = async () => {
@@ -37,7 +38,7 @@ const Stock = () => {
       const res = await axios.get('http://localhost:5000/api/stocks/getAll');
       setStocks(res.data);
     } catch (err) {
-      console.error('Error fetching stocks:', err);
+      console.error('Error fetching stocks:', );
     }
   };
 
@@ -58,18 +59,24 @@ const Stock = () => {
       setFormData(prev => ({
         ...prev,
         item: selectedItem.item,
-        price: selectedItem.price,
+        price: selectedItem.price
       }));
     }
   };
 
   const handleAddStock = async (e) => {
     e.preventDefault();
+
+    const payload = {
+      ...formData,
+      totalProfit: formData.totalProfit || 0 // Ensure totalProfit is sent
+    };
+
     try {
       if (formData._id) {
-        await axios.put(`http://localhost:5000/api/stocks/updateStock/${formData._id}`, formData);
+        await axios.put(`http://localhost:5000/api/stocks/updateStock/${formData._id}`, payload);
       } else {
-        await axios.post('http://localhost:5000/api/stocks/createStock', formData);
+        await axios.post('http://localhost:5000/api/stocks/createStock', payload);
       }
 
       setShowForm(false);
@@ -78,8 +85,9 @@ const Stock = () => {
         totalStock: '',
         balanceStock: '',
         price: '',
-        Manafactureringdate: '',
-        experideDate: ''
+        manufacturingDate: '',
+        expiryDate: '',
+        totalProfit: ''
       });
       fetchStocks();
     } catch (err) {
@@ -115,8 +123,9 @@ const Stock = () => {
               totalStock: '',
               balanceStock: '',
               price: '',
-              Manafactureringdate: '',
-              experideDate: ''
+              manufacturingDate: '',
+              expiryDate: '',
+              totalProfit: ''
             });
             setShowForm(true);
           }}
@@ -141,8 +150,12 @@ const Stock = () => {
                 <td className="border border-gray-700 px-3 py-2">{stock.totalStock}</td>
                 <td className="border border-gray-700 px-3 py-2">{stock.balanceStock}</td>
                 <td className="border border-gray-700 px-3 py-2">₹{stock.price}</td>
-                <td className="border border-gray-700 px-3 py-2">{new Date(stock.Manafactureringdate).toLocaleDateString()}</td>
-                <td className="border border-gray-700 px-3 py-2">{new Date(stock.experideDate).toLocaleDateString()}</td>
+                <td className="border border-gray-700 px-3 py-2">
+                  {new Date(stock.manufacturingDate).toLocaleDateString()}
+                </td>
+                <td className="border border-gray-700 px-3 py-2">
+                  {new Date(stock.expiryDate).toLocaleDateString()}
+                </td>
                 <td className="border border-gray-700 px-3 py-2">
                   <select
                     onChange={(e) => {
@@ -227,20 +240,20 @@ const Stock = () => {
               <div className="flex flex-col">
                 <label className="mb-1 text-sm font-semibold">Manufacturing Date</label>
                 <input
-                  name="Manafactureringdate"
-                  value={formData.Manafactureringdate}
+                  name="manufacturingDate"
+                  value={formData.manufacturingDate}
                   onChange={handleChange}
                   required
                   type="date"
-                  className="bg-gray-800 border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-gray-800 border border-gray-600 p-2 rounded- focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div className="flex flex-col">
                 <label className="mb-1 text-sm font-semibold">Expiry Date</label>
                 <input
-                  name="experideDate"
-                  value={formData.experideDate}
+                  name="expiryDate"
+                  value={formData.expiryDate}
                   onChange={handleChange}
                   required
                   type="date"
