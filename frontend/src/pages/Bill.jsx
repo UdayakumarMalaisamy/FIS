@@ -54,7 +54,6 @@ const Bill = () => {
 
   const handleAddBill = async (e) => {
     e.preventDefault();
-
     const total = formData.items.reduce((acc, item) => {
       const qty = parseFloat(item.quantity) || 0;
       const prc = parseFloat(item.price) || 0;
@@ -67,7 +66,6 @@ const Bill = () => {
         tolalprice: total,
         Balanceamount: parseFloat(formData.Balanceamount || 0),
       };
-
       await axios.post("http://localhost:5000/api/bills/createBill", payload);
       setShowForm(false);
       setFormData({
@@ -107,6 +105,169 @@ const Bill = () => {
     }
   };
 
+  // Bill download function
+  const downloadBill = (bill) => {
+    const billContent = generateBillHTML(bill);
+    
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(billContent);
+    printWindow.document.close();
+    
+    // Wait for content to load, then print
+    printWindow.onload = () => {
+      printWindow.print();
+      // Close the window after printing (optional)
+      printWindow.onafterprint = () => {
+        printWindow.close();
+      };
+    };
+  };
+
+  // Generate HTML content for the bill
+  const generateBillHTML = (bill) => {
+    const currentDate = new Date().toLocaleDateString();
+    const itemsHTML = bill.items.map((item, index) => `
+      <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;">${index + 1}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${item.item}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${item.quantity}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${parseFloat(item.price).toFixed(2)}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${(parseFloat(item.quantity) * parseFloat(item.price)).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Bill #${bill.billno}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+          }
+          .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          .bill-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+          }
+          .customer-info, .bill-details {
+            flex: 1;
+          }
+          .bill-details {
+            text-align: right;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          th {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+          }
+          .total-section {
+            margin-top: 20px;
+            text-align: right;
+          }
+          .total-row {
+            margin: 5px 0;
+            font-size: 16px;
+          }
+          .grand-total {
+            font-size: 18px;
+            font-weight: bold;
+            border-top: 2px solid #333;
+            padding-top: 10px;
+            margin-top: 10px;
+          }
+          .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+          }
+          @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="company-name"></div>
+          <div>Address Line 1, Address Line 2</div>
+          <div>Phone: +91 XXXXXXXXXX | Email: info@company.com</div>
+        </div>
+
+        <div class="bill-info">
+          <div class="customer-info">
+            <h3>Bill To:</h3>
+            <strong>${bill.costmername}</strong><br>
+            Contact: ${bill.contact}
+          </div>
+          <div class="bill-details">
+            <h3>Bill Details:</h3>
+            <strong>Bill No:</strong> ${bill.billno}<br>
+            <strong>Date:</strong> ${currentDate}<br>
+            <strong>Payment Status:</strong> ${bill.paymentstatus}
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Item Description</th>
+              <th>Quantity</th>
+              <th>Rate</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHTML}
+          </tbody>
+        </table>
+
+        <div class="total-section">
+          <div class="total-row">
+            <strong>Total Amount: ₹${parseFloat(bill.tolalprice).toFixed(2)}</strong>
+          </div>
+          ${bill.paymentstatus !== 'Paid' ? `
+            <div class="total-row">
+              Balance Amount: ₹${parseFloat(bill.Balanceamount).toFixed(2)}
+            </div>
+          ` : ''}
+          <div class="grand-total">
+            Grand Total: ₹${parseFloat(bill.tolalprice).toFixed(2)}
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>Thank you for your business!</p>
+          <p>This is a computer generated bill.</p>
+        </div>
+      </body>
+      </html>
+    `;
+  };
+
   return (
     <div className="p-4 bg-gray-900 text-white min-h-screen">
       <div className="flex items-center justify-between mb-4">
@@ -142,7 +303,6 @@ const Bill = () => {
                 className="border p-2 w-full bg-gray-700 text-white"
                 required
               />
-
               <div className="space-y-2">
                 {formData.items.map((itm, index) => (
                   <div key={index} className="flex gap-2">
@@ -187,7 +347,6 @@ const Bill = () => {
                   + Add Item
                 </button>
               </div>
-
               <select
                 name="paymentstatus"
                 value={formData.paymentstatus}
@@ -200,7 +359,6 @@ const Bill = () => {
                 <option value="Partial">Partial</option>
                 <option value="Unpaid">Unpaid</option>
               </select>
-
               {formData.paymentstatus !== "Paid" && (
                 <input
                   type="number"
@@ -211,7 +369,6 @@ const Bill = () => {
                   className="border p-2 w-full bg-gray-700 text-white"
                 />
               )}
-
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
@@ -259,21 +416,31 @@ const Bill = () => {
               <td className="border border-gray-700 px-3 py-2 text-white">{bill.paymentstatus}</td>
               <td className="border border-gray-700 px-3 py-2 text-white">₹{bill.Balanceamount}</td>
               <td className="border border-gray-700 px-3 py-2 text-center">
-                <select
-                  onChange={(e) => {
-                    const action = e.target.value;
-                    if (action === "edit") handleEdit(bill);
-                    else if (action === "delete") handleDelete(bill._id);
-                  }}
-                  defaultValue=""
-                  className="border rounded px-2 py-1 text-sm bg-gray-700 text-white"
-                >
-                  <option value="" disabled>
-                    Action
-                  </option>
-                  <option value="edit">Edit</option>
-                  <option value="delete">Delete</option>
-                </select>
+                <div className="flex gap-2 justify-center">
+                  <select
+                    onChange={(e) => {
+                      const action = e.target.value;
+                      if (action === "edit") handleEdit(bill);
+                      else if (action === "delete") handleDelete(bill._id);
+                      e.target.value = ""; // Reset select
+                    }}
+                    defaultValue=""
+                    className="border rounded px-2 py-1 text-sm bg-gray-700 text-white"
+                  >
+                    <option value="" disabled>
+                      Action
+                    </option>
+                    <option value="edit">Edit</option>
+                    <option value="delete">Delete</option>
+                  </select>
+                  <button
+                    onClick={() => downloadBill(bill)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                    title="Download Bill"
+                  >
+                    📄
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

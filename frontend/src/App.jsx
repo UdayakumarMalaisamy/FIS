@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import Login from "./components/login";
 import Dashboard from "./components/dashboard";
 import Sidebar from "./pages/sidebar";
@@ -7,32 +7,29 @@ import Bill from "./pages/Bill";
 import Report from "./pages/Report";
 
 function Layout() {
-  const location = useLocation();
-  const hideSidebar = location.pathname === "/";
-
   return (
-    <div className="flex postion-relative h-screen posison-relative overflow-hidden">
-      {!hideSidebar && <Sidebar />}
-      <div className="flex-1 ">
-        <Routes>
-          
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/stock" element={<Stock />} />
-          <Route path="/bill" element={<Bill />} />
-          <Route path="/reports" element={<Report />} />
-        </Routes>
+    <div className="flex position-relative h-screen overflow-hidden">
+      <Sidebar />
+      <div className="flex-1">
+        <Outlet />
       </div>
     </div>
   );
 }
 
-function App() {
-  return (
-    <Router>
-      <Layout />
-    </Router>
-  );
-}
+const router = createBrowserRouter([
+  { path: "/", element: <Login /> },
+  {
+    element: <Layout />,
+    children: [
+      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/stock", element: <Stock /> },
+      { path: "/bill", element: <Bill /> },
+      { path: "/reports", element: <Report /> },
+    ],
+  },
+]);
 
-export default App;
+export default function App() {
+  return <RouterProvider router={router} />;
+}
